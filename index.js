@@ -14,13 +14,31 @@ const openai = new OpenAIApi(configuration);
 
 app.get('/generate', async (req, res) => {
   const keyword = req.query.keyword;
-  const category = req.query.category
-  // Generate Shayari using ChatGPT
-  // const prompt = `Keyword: ${keyword}${category}\nOutput: `;
+  const category = req.query.category;
+  let prompt = '';
+
+  // Define prompts and hashtags based on the category
+  switch (category) {
+    case 'shayari':
+      prompt = `Write a Shayari about ${keyword}\n\nOutput:`;
+      break;
+    case 'joke':
+      prompt = `Tell a joke about ${keyword}\n\nOutput:`;
+      break;
+    case 'story':
+      prompt = `Once upon a time, there was ${keyword}. Write a story about it.\n\nOutput:`;
+      break;
+    case 'quote':
+      prompt = `Share a quote related to ${keyword}\n\nOutput:`;
+      break;
+    default:
+      res.status(400).json({ error: 'Invalid category' });
+      return;
+  }
 
   const response = await openai.createCompletion({
     model: 'text-davinci-003',
-    prompt: `${keyword}${category}`,
+    prompt:prompt,
     temperature: 0.5,
     max_tokens: 100,
     top_p: 1,
